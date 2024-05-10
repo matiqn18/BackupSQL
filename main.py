@@ -4,20 +4,27 @@ import sql_config
 import datetime
 
 
-def create_db_connection(host_name, user_name, user_password, db_name, host_port):
+def create_db_connection(host_name, user_name, user_password, db_name, host_port=None):
     conn = None
     try:
-        conn = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password,
-            database=db_name,
-            port=host_port
-        )
+        if host_port is not None:
+            conn = mysql.connector.connect(
+                host=host_name,
+                user=user_name,
+                passwd=user_password,
+                database=db_name,
+                port=host_port
+            )
+        else:
+            conn = mysql.connector.connect(
+                host=host_name,
+                user=user_name,
+                passwd=user_password,
+                database=db_name
+            )
         print("MySQL Database connection successful")
     except Error as err:
         print(f"Error: '{err}'")
-
     return conn
 
 
@@ -74,7 +81,7 @@ if connection is not None:
     cursor = connection.cursor()
     tables = get_table_names(connection, sql_config.DATABASE)
     current_time = datetime.datetime.now().strftime("%d %b %Y, %H:%M")
-    string = (f'-- Czas generowania: {current_time}\n'
+    string = (f'-- Czas generowania: {current_time}\n\n'
               'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";\n'
               'SET AUTOCOMMIT = 0;\n'
               'START TRANSACTION;\n'
@@ -82,7 +89,7 @@ if connection is not None:
               '/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\n'
               '/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;\n'
               '/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;\n'
-              '/*!40101 SET NAMES utf8mb4 */;\n')
+              '/*!40101 SET NAMES utf8mb4 */;\n\n')
 
     for table_name in tables:
         column_names = get_column_names(connection, table_name)
@@ -94,9 +101,13 @@ if connection is not None:
         string += creating_import(rows, column_names) + "\n"
 
     string += "COMMIT;\n"
-    print(string)
-    with open("backup.sql", "w", encoding='utf-8') as file:
-        file.write(string)
+    try:
+        with open("backup.sql", "w", encoding='utf-8') as file:
+            file.write(string)
+            print("File backup.sql has been successfully saved.")
+    except IOError as err:
+        print(f"Error: '{err}'")
+
     cursor.close()
     connection.close()
 else:
