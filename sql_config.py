@@ -1,5 +1,11 @@
-HOST = 'localhost'
-USER = 'root'
+HOST = ''
+USER = ''
 PASSWORD = ''
-DATABASE = 'work'
-PORT = None
+DATABASE = ''
+PORT_BACKUP =
+
+HOST_BACKUP = ''
+USER_BACKUP = ''
+PASSWORD_BACKUP = ''
+DATABASE_BACKUP = ''
+PORT_BACKUP =

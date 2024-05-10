@@ -52,20 +52,35 @@ def get_column_names(conn, table_name):
         print(f"Error: '{err}'")
     return column_names
 
+def load_sql_from_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
+
 
 def creating_import(rows, column_names):
     max_records = 1000
     row_count = 0
     values = ""
     for row in rows:
-        values += "("
-        for j in range(len(row)):
-            if isinstance(row[j], str):
-                values += f"'{row[j]}', "
+        row_values = []
+        for item in row:
+            if item is None:
+                row_values.append("NULL")
+            elif isinstance(item, str):
+                # Escapowanie specjalnych znaków w ciągach znaków
+                item = item.replace("'", "''")  # Escapowanie pojedynczych cudzysłowów
+                row_values.append(f"'{item}'")
+            elif isinstance(item, datetime.datetime):
+                # Konwersja daty na odpowiedni format
+                row_values.append(f"'{item.strftime('%Y-%m-%d %H:%M:%S')}'")
+            elif isinstance(item, datetime.date):
+                # Konwersja daty na odpowiedni format
+                row_values.append(f"'{item.strftime('%Y-%m-%d')}'")
             else:
-                values += f"{row[j]}, "
+                # Obsługa innych typów danych
+                row_values.append(str(item))
 
-        values = values.rstrip(", ") + "), "
+        values += "(" + ", ".join(row_values) + "), "
         row_count += 1
 
         if row_count >= max_records:
@@ -73,7 +88,7 @@ def creating_import(rows, column_names):
             values += f"; \n INSERT INTO `{table_name}` ({', '.join(column_names)}) VALUES "
             row_count = 0
 
-    return values[:-2]
+    return values[:-2] + ";"
 
 
 connection = create_db_connection(sql_config.HOST, sql_config.USER, sql_config.PASSWORD, sql_config.DATABASE, sql_config.PORT)
@@ -96,9 +111,12 @@ if connection is not None:
         cursor.execute(f"SELECT * FROM {table_name}")
         rows = cursor.fetchall()
 
-        string += f"TRUNCATE TABLE `{table_name}`; \n"
-        string += f"INSERT INTO `{table_name}` ({', '.join(column_names)}) VALUES "
-        string += creating_import(rows, column_names) + "\n"
+        if rows:
+            string += f"TRUNCATE TABLE `{table_name}`; \n"
+            string += f"INSERT INTO `{table_name}` ({', '.join(column_names)}) VALUES "
+            string += creating_import(rows, column_names) + "\n"
+        else:
+            print(f"No rows found in table '{table_name}', skipping INSERT INTO")
 
     string += "COMMIT;\n"
     try:
@@ -110,5 +128,26 @@ if connection is not None:
 
     cursor.close()
     connection.close()
+
+    connection = create_db_connection(sql_config.HOST_BACKUP, sql_config.USER_BACKUP, sql_config.PASSWORD_BACKUP, sql_config.DATABASE_BACKUP,
+                                      sql_config.PORT_BACKUP)
+    if connection is not None:
+        cursor = connection.cursor()
+
+        sql_file_path = "backup.sql"
+        sql_queries = load_sql_from_file(sql_file_path)
+        try:
+            cursor.execute(sql_queries, multi=True)
+            for result in cursor.stored_results():
+                result.fetchall()
+                connection.commit()
+            print("SQL queries successfully executed.")
+        except Error as err:
+            print(f"Error: {err}")
+
+        cursor.close()
+        connection.close()
+    else:
+        print("Unable to establish a database connection.")
 else:
     exit()
