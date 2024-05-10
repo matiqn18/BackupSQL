@@ -16,7 +16,7 @@ To use BackupSQL, follow these steps:
 1. Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/BackupSQL.git
+git clone https://github.com/matiqn18/BackupSQL.git
 ```
 
 2. Install the required dependencies:
