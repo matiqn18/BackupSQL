@@ -1,6 +1,6 @@
 # BackupSQL
 
-BackupSQL is a Python script for creating SQL backups of MySQL databases. It connects to a MySQL database, retrieves table names and column names, and exports the data to a SQL file for backup purposes.
+BackupSQL is a Python script designed for creating SQL backups of MySQL databases. This script establishes a connection with a MySQL database, retrieves table and column names, and exports the data into a SQL file for backup purposes. Additionally, it provides functionality to automatically restore data from a backup SQL file to a backup database.
 
 ## Features
 
@@ -8,6 +8,7 @@ BackupSQL is a Python script for creating SQL backups of MySQL databases. It con
 - Retrieves table names and column names from the connected database.
 - Generates SQL queries to export table data.
 - Saves the SQL backup to a file.
+- Automatically save data to backup server
 
 ## Installation
 
@@ -38,15 +39,23 @@ python main.py
 Before running the script, make sure to configure the `sql_config.py` file with your MySQL database credentials:
 
 ```python
+#Main Server
 HOST = 'localhost'
 USER = 'yourusername'
 PASSWORD = 'yourpassword'
 DATABASE = 'yourdatabase'
 PORT = 3306  # Optional: Specify the port number if necessary
+
+#Backup Server
+HOST_BACKUP = ''
+USER_BACKUP = ''
+PASSWORD_BACKUP = ''
+DATABASE_BACKUP = ''
+PORT_BACKUP =
 ```
 
 ## Usage
-Simply run the main.py script to generate a SQL backup file. The backup will be saved in the project directory with the name backup.sql.
+Simply run the main.py script to generate a SQL backup file and save it on the backup server. The backup will be saved in the project directory with the name backup.sql.
 
 ```bash
 python main.py
