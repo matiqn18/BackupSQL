@@ -2,7 +2,9 @@ HOST = ''
 USER = ''
 PASSWORD = ''
 DATABASE = ''
-PORT_BACKUP =
+PORT_ =
+
+BACKUP_LIVE = true  
 
 HOST_BACKUP = ''
 USER_BACKUP = ''
