@@ -129,25 +129,25 @@ if connection is not None:
     cursor.close()
     connection.close()
 
-    connection = create_db_connection(sql_config.HOST_BACKUP, sql_config.USER_BACKUP, sql_config.PASSWORD_BACKUP, sql_config.DATABASE_BACKUP,
-                                      sql_config.PORT_BACKUP)
-    if connection is not None:
-        cursor = connection.cursor()
-
-        sql_file_path = "backup.sql"
-        sql_queries = load_sql_from_file(sql_file_path)
-        try:
-            cursor.execute(sql_queries, multi=True)
-            for result in cursor.stored_results():
-                result.fetchall()
-                connection.commit()
-            print("SQL queries successfully executed.")
-        except Error as err:
-            print(f"Error: {err}")
-
-        cursor.close()
-        connection.close()
-    else:
-        print("Unable to establish a database connection.")
+    if sql_config.BACKUP_LIVE:
+        connection = create_db_connection(sql_config.HOST_BACKUP, sql_config.USER_BACKUP, sql_config.PASSWORD_BACKUP, sql_config.DATABASE_BACKUP,sql_config.PORT_BACKUP)
+        if connection is not None:
+            cursor = connection.cursor()
+    
+            sql_file_path = "backup.sql"
+            sql_queries = load_sql_from_file(sql_file_path)
+            try:
+                cursor.execute(sql_queries, multi=True)
+                for result in cursor.stored_results():
+                    result.fetchall()
+                    connection.commit()
+                print("SQL queries successfully executed.")
+            except Error as err:
+                print(f"Error: {err}")
+    
+            cursor.close()
+            connection.close()
+        else:
+            print("Unable to establish a database connection.")
 else:
     exit()
