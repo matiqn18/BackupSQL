@@ -4,7 +4,7 @@ PASSWORD = ''
 DATABASE = ''
 PORT = 1
 
-BACKUP_LIVE = True
+BACKUP_LIVE = true  
 
 HOST_BACKUP = ''
 USER_BACKUP = ''
