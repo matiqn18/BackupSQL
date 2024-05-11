@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 import sql_config
 import datetime
+import os
 
 
 def create_db_connection(host_name, user_name, user_password, db_name, host_port=None):
@@ -89,6 +90,23 @@ def creating_import(rows, column_names):
             row_count = 0
 
     return values[:-2] + ";"
+
+
+if 'MYSQL_HOST' in os.environ:
+    MYSQL_HOST = os.environ['MYSQL_HOST']
+    MYSQL_USER = os.environ['MYSQL_USER']
+    MYSQL_PASSWORD = os.environ['MYSQL_PASSWORD']
+    MYSQL_DATABASE = os.environ['MYSQL_DATABASE']
+    MYSQL_PORT = os.environ['MYSQL_PORT']
+    BACKUP_LIVE = os.environ['BACKUP_LIVE']
+    HOST_BACKUP = os.environ['HOST_BACKUP']
+    USER_BACKUP = os.environ['USER_BACKUP']
+    PASSWORD_BACKUP = os.environ['PASSWORD_BACKUP']
+    DATABASE_BACKUP = os.environ['DATABASE_BACKUP']
+    PORT_BACKUP = os.environ['PORT_BACKUP']
+else:
+    from sql_config import *
+
 
 
 connection = create_db_connection(sql_config.HOST, sql_config.USER, sql_config.PASSWORD, sql_config.DATABASE, sql_config.PORT)
