@@ -93,6 +93,7 @@ def creating_import(rows, column_names):
 
 
 if 'MYSQL_HOST' in os.environ:
+    environment = True
     MYSQL_HOST = os.environ['MYSQL_HOST']
     MYSQL_USER = os.environ['MYSQL_USER']
     MYSQL_PASSWORD = os.environ['MYSQL_PASSWORD']
@@ -105,11 +106,13 @@ if 'MYSQL_HOST' in os.environ:
     DATABASE_BACKUP = os.environ['DATABASE_BACKUP']
     PORT_BACKUP = os.environ['PORT_BACKUP']
 else:
+    environment = False
     from sql_config import *
 
-
-
-connection = create_db_connection(sql_config.HOST, sql_config.USER, sql_config.PASSWORD, sql_config.DATABASE, sql_config.PORT)
+if environment:
+    connection = create_db_connection(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT)
+else:
+    connection = create_db_connection(sql_config.HOST, sql_config.USER, sql_config.PASSWORD, sql_config.DATABASE, sql_config.PORT)
 if connection is not None:
     cursor = connection.cursor()
     tables = get_table_names(connection, sql_config.DATABASE)
@@ -148,7 +151,10 @@ if connection is not None:
     connection.close()
 
     if sql_config.BACKUP_LIVE:
-        connection = create_db_connection(sql_config.HOST_BACKUP, sql_config.USER_BACKUP, sql_config.PASSWORD_BACKUP, sql_config.DATABASE_BACKUP,sql_config.PORT_BACKUP)
+        if environment:
+            connection = create_db_connection(HOST_BACKUP, USER_BACKUP, PASSWORD_BACKUP, DATABASE_BACKUP, PORT_BACKUP)
+        else:
+            connection = create_db_connection(sql_config.HOST_BACKUP, sql_config.USER_BACKUP, sql_config.PASSWORD_BACKUP, sql_config.DATABASE_BACKUP,sql_config.PORT_BACKUP)
         if connection is not None:
             cursor = connection.cursor()
     
