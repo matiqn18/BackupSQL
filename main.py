@@ -111,11 +111,13 @@ else:
 
 if environment:
     connection = create_db_connection(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT)
+    database_name = MYSQL_DATABASE
 else:
     connection = create_db_connection(sql_config.HOST, sql_config.USER, sql_config.PASSWORD, sql_config.DATABASE, sql_config.PORT)
+    database_name= sql_config.DATABASE
 if connection is not None:
     cursor = connection.cursor()
-    tables = get_table_names(connection, sql_config.DATABASE)
+    tables = get_table_names(connection, database_name)
     current_time = datetime.datetime.now().strftime("%d %b %Y, %H:%M")
     string = (f'-- Czas generowania: {current_time}\n\n'
               'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";\n'
