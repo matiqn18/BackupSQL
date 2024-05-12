@@ -68,17 +68,13 @@ def creating_import(rows, column_names):
             if item is None:
                 row_values.append("NULL")
             elif isinstance(item, str):
-                # Escapowanie specjalnych znaków w ciągach znaków
-                item = item.replace("'", "''")  # Escapowanie pojedynczych cudzysłowów
+                item = item.replace("'", "''")
                 row_values.append(f"'{item}'")
             elif isinstance(item, datetime.datetime):
-                # Konwersja daty na odpowiedni format
                 row_values.append(f"'{item.strftime('%Y-%m-%d %H:%M:%S')}'")
             elif isinstance(item, datetime.date):
-                # Konwersja daty na odpowiedni format
                 row_values.append(f"'{item.strftime('%Y-%m-%d')}'")
             else:
-                # Obsługa innych typów danych
                 row_values.append(str(item))
 
         values += "(" + ", ".join(row_values) + "), "
@@ -105,16 +101,15 @@ if 'MYSQL_HOST' in os.environ:
     PASSWORD_BACKUP = os.environ['PASSWORD_BACKUP']
     DATABASE_BACKUP = os.environ['DATABASE_BACKUP']
     PORT_BACKUP = os.environ['PORT_BACKUP']
-else:
-    environment = False
-    from sql_config import *
 
-if environment:
     connection = create_db_connection(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT)
     database_name = MYSQL_DATABASE
 else:
+    from sql_config import *
     connection = create_db_connection(sql_config.HOST, sql_config.USER, sql_config.PASSWORD, sql_config.DATABASE, sql_config.PORT)
-    database_name= sql_config.DATABASE
+    database_name = sql_config.DATABASE
+
+
 if connection is not None:
     cursor = connection.cursor()
     tables = get_table_names(connection, database_name)
