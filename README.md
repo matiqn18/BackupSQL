@@ -45,7 +45,7 @@ HOST = 'localhost'
 USER = 'yourusername'
 PASSWORD = 'yourpassword'
 DATABASE = 'yourdatabase'
-PORT =   # Optional: Specify the port number if necessary
+PORT = None # Optional: Specify the port number if necessary
 
 # Backup Live Setting
 BACKUP_LIVE = True  # Set to True to enable sending data to backup server
@@ -55,7 +55,7 @@ HOST_BACKUP = 'backupserver'
 USER_BACKUP = 'backupusername'
 PASSWORD_BACKUP = 'backuppassword'
 DATABASE_BACKUP = 'backupdatabase'
-PORT_BACKUP =   # Optional: Specify the port number if necessary
+PORT_BACKUP = None # Optional: Specify the port number if necessary
 ```
 
 ## Usage
